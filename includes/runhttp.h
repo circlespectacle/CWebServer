@@ -6,7 +6,7 @@
 #include <errno.h>
 #include <signal.h>
 
-#define poolsize 1
+#define poolsize 25
 
 pthread_t pool[poolsize];
 
