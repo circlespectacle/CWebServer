@@ -3,7 +3,15 @@
 
 #include "http.h"
 #include <pthread.h>
+#include <errno.h>
+#include <signal.h>
+
+#define poolsize 1
+
+pthread_t pool[poolsize];
 
 void runhttpserver();
+void listening(int);
+void* servering(void *);
 
 #endif

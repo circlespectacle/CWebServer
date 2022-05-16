@@ -8,10 +8,18 @@
 #include "runhttp.h"
 #include "runhttps.h"
 
-int main() {
+void disconnect_occurred() {
+    printf("A service has done.\n");
+}
 
-    //runhttpserver();
-    runhttpsserver();
+int main() {
+    //signal(SIGINT, disconnect_occurred());
+    signal(SIGPIPE, disconnect_occurred);
+
+    int pid = fork();
+    if (pid) runhttpserver();
+    else runhttpsserver();
+
 
     return 0; 
 }

@@ -7,25 +7,50 @@ char text[MAXF];
 
 void runhttpserver() {
     int srv_sock = initSrvSocket(lport);
-    listen(srv_sock, 20);
+    listening(srv_sock);
+
+    close(srv_sock); 
+}
+
+void listening(int srvs) {
+    listen(srvs, 20);
     printf("listening\n");
 
-    int cln_sock = acptClnSocket(srv_sock);
-
     while (1) {
-        read(cln_sock, recvbuf, MAXN); 
-        printf("%s\n", recvbuf);
+        int cln_sock = acptClnSocket(srvs);
+        int i = 0; 
+        printf("bp0\n");
+        while (i < poolsize && pthread_create(&pool[i], NULL, servering, (void *) &cln_sock) != 0) {
+            printf("%d\n", i);
+            i ++;
+        }
+    }
+}
+
+void* servering(void* arg) {
+    int cln_sock = *(int *) arg; 
+    // printf("bp1\n");
+
+    int cnt = 1; 
+    while (cnt) {
+        printf("itbegin: %d\n", cnt);
+        int rs = read(cln_sock, recvbuf, MAXN); 
+        if (rs >= 0) printf("%s\n", recvbuf);
         sendbuf[0] = '\0';
 
         int leng = responsehttp(recvbuf, sendbuf, text);
-        write(cln_sock, sendbuf, strlen(sendbuf));
+        rs = write(cln_sock, sendbuf, strlen(sendbuf));
+        if (rs < 0) break ;
         printf("%s\n", sendbuf);
         if (leng > 0) {
             write(cln_sock, text, leng);
         }
+
+        printf("itend: %d\n", cnt);
+        cnt ++;
+
+        // sleep(2);
     }
 
     close(cln_sock);
-
-    close(srv_sock); 
 }

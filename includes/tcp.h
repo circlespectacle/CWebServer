@@ -15,6 +15,6 @@
 #define sport 9080
 
 int initSrvSocket(int); 
-int acptClnSocket(int srvsock); 
+int acptClnSocket(int); 
 
 #endif
